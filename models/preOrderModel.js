@@ -44,8 +44,8 @@ PreOrder.init({
     allowNull: false,
     validate: {
       is: {
-        args: [/^[A-Z]{2}-\d{3}-\d{4}$/],
-        msg: "GPS Address must follow the format AK-039-5028"
+        args: [/^[A-Z]{2}-\d{4}-\d{4}$/],
+        msg: "GPS Address must follow the format AK-0039-5028"
       }
     }
   },
