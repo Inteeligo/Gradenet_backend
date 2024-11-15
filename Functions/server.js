@@ -14,8 +14,8 @@ app.use(express.json());
 const PORT = process.env.PORT || 8080;
 
 // Define routes
-app.use("/api/agents", require("./Functions/routes/agentRoute"));
-app.use("/api", require("./Functions/routes/preOrderRoute"));
+app.use("/api/agents", require("./routes/agentRoute"));
+app.use("/api", require("./routes/preOrderRoute"));
 
 app.post("/api/contact", (req, res) => {
   const { name, email, phone, message } = req.body;
