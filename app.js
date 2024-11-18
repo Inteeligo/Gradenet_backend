@@ -2,8 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
-const syncDatabase = require('./models/index');
-
+const syncDatabase = require("./models/index");
+ 
 // Initialize Express app
 const app = express();
 app.use(cors());
@@ -13,6 +13,16 @@ app.use(express.json());
 // Define the port
 const PORT = process.env.PORT || 8080;
 
+app.get("/api", (req, res) => {
+  res.send("Hello World!");
+});
+
+app.use((req, res, next) => {
+  res.status(404).json({
+    error: 'Not Found',
+    message: `The requested resource ${req.originalUrl} was not found on this server.`,
+  });
+});
 // Define routes
 app.use("/api/agents", require("./routes/agentRoute"));
 app.use("/api", require("./routes/preOrderRoute"));
@@ -60,13 +70,15 @@ app.post("/api/contact", (req, res) => {
       console.error("Email error:", err.message);
       return res.status(500).json({ message: "Error sending message" });
     }
-    console.log(`${new Date().toLocaleString()} - Email sent successfully: ${info.response}`);
-    return res.status(200).json({ message: "Message sent successfully", mailOptions });
+    console.log(
+      `${new Date().toLocaleString()} - Email sent successfully: ${
+        info.response
+      }`
+    );
+    return res
+      .status(200)
+      .json({ message: "Message sent successfully", mailOptions });
   });
-});
-
-app.get('/',(req,res)=>{
-  res.send('Hello World!')
 });
 
 // Synchronize the database and start the server once successful
@@ -78,7 +90,11 @@ syncDatabase()
     });
   })
   .catch((error) => {
-    console.error('Failed to sync database:', error);
+    console.error("Failed to sync database:", error);
     // Optionally handle the failure by shutting down the server or taking other actions.
     process.exit(1); // Exit the process with a non-zero code to indicate failure
   });
+  
+ 
+
+
