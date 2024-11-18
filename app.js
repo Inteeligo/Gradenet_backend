@@ -13,9 +13,13 @@ app.use(express.json());
 // Define the port
 const PORT = process.env.PORT || 8080;
 
-app.get("/api", (req, res) => {
+app.get("/", (req, res) => {
   res.send("Hello World!");
 });
+
+// Define routes
+app.use("/api/agents", require("./routes/agentRoute"));
+app.use("/api", require("./routes/preOrderRoute"));
 
 app.use((req, res, next) => {
   res.status(404).json({
@@ -23,10 +27,6 @@ app.use((req, res, next) => {
     message: `The requested resource ${req.originalUrl} was not found on this server.`,
   });
 });
-// Define routes
-app.use("/api/agents", require("./routes/agentRoute"));
-app.use("/api", require("./routes/preOrderRoute"));
-
 app.post("/api/contact", (req, res) => {
   const { name, email, phone, message } = req.body;
 
