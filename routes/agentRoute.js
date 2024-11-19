@@ -11,9 +11,7 @@ router.post('/', async (req, res) => {
     phone, 
     location, 
     region, 
-    hearAboutUs, 
-    password, 
-    confirmPassword, 
+    hearAboutUs,  
     agree 
   } = req.body;
 
@@ -32,12 +30,12 @@ router.post('/', async (req, res) => {
   if (!region) errors.region = "Region is required";
   if (!hearAboutUs) errors.hearAboutUs = "How did you hear about us is required";
 
-  if (!password) errors.password = "Password is required";
-  else if (password.length < 6) errors.password = "Password must be at least 6 characters long";
+  // if (!password) errors.password = "Password is required";
+  // else if (password.length < 6) errors.password = "Password must be at least 6 characters long";
 
-  if (password && password !== confirmPassword) {
-    errors.confirmPassword = "Passwords do not match";
-  }
+  // if (password && password !== confirmPassword) {
+  //   errors.confirmPassword = "Passwords do not match";
+  // }
 
   if (!agree) errors.agree = "You must agree to the terms and conditions";
 
@@ -67,7 +65,6 @@ router.post('/', async (req, res) => {
       location,
       region,
       hearAboutUs,
-      password, // Save the hashed password
       agree
     });
 
