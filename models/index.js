@@ -12,4 +12,7 @@ const syncDatabase = async () => {
   }
 };
 
+Agent.associate(sequelize.models);
+PreOrder.associate(sequelize.models);
+
 module.exports = syncDatabase;
