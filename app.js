@@ -6,9 +6,15 @@ const syncDatabase = require("./models/index");
  
 // Initialize Express app
 const app = express();
-app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+const corsOptions = {
+  origin: '*', // Allow all origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
 
 // Define the port
 const PORT = process.env.PORT || 8080;
