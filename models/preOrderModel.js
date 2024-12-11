@@ -68,6 +68,15 @@ PreOrder.init(
         key: 'id',
       },
     },
+    status: {
+      type: DataTypes.ENUM('active', 'inactive', 'potential'),
+      allowNull: false,
+      defaultValue: 'potential',
+    },
+    engagement: {
+      type: DataTypes.FLOAT, 
+      allowNull: true,
+    },
     package: {
       type: DataTypes.JSON,  // Use JSON data type for MySQL or SQLite
       allowNull: false,
@@ -82,7 +91,7 @@ PreOrder.init(
         },
       },
     },
-  },
+},
   {
     sequelize, // Sequelize instance
     modelName: 'PreOrder',

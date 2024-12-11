@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const Agent = require("../models/agentModel"); // Sequelize model
 const {createJwtToken} = require("../middleware/token");
+const PreOrder = require('../models/preOrderModel');
+const authenticateAgent = require('../middleware/Auth');
+const { Op } = require('sequelize');
 
 // Route to handle form submission
 router.post("/", async (req, res) => {
@@ -162,5 +165,87 @@ router.post("/login", async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 });
+
+// get an agent/profile
+router.get("/profile", authenticateAgent, async (req, res) => {
+  try {
+    const agentId = req.agent.id;
+
+    // Fetch agent details by ID
+    const agent = await Agent.findOne({
+      where: { id: agentId },
+      attributes: ["id", "firstName", "lastName", "email"], // Include firstName and lastName for concatenation
+    });
+
+    if (!agent) {
+      return res.status(404).json({ message: "Agent not found" });
+    }
+
+    // Combine firstName and lastName to create fullName
+    const fullName = `${agent.firstName} ${agent.lastName}`;
+
+    return res.status(200).json({
+      id: agent.id,
+      fullName,
+      email: agent.email,
+    });
+  } catch (error) {
+    console.error("Error fetching agent profile:", error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+
+router.get('/metric', authenticateAgent, async (req, res) => {
+  try {
+    const agentId = req.agent.id; // Extract agent ID from the authenticated agent
+
+    // Fetch total clients for the agent
+    const totalClients = await PreOrder.count({
+      where: { agentId },
+    });
+
+    // Fetch new clients in the last 30 days
+    const newClients = await PreOrder.count({
+      where: {
+        agentId,
+        createdAt: {
+          [Op.gte]: new Date(new Date() - 30 * 24 * 60 * 60 * 1000), // Clients created in the last 30 days
+        },
+      },
+    });
+
+    // Fetch active clients (assuming 'active' status exists)
+    const activeClients = await PreOrder.count({
+      where: {
+        agentId,
+        status: 'active',
+      },
+    });
+
+    // Fetch engagement data
+    const engagementData = await PreOrder.findAll({
+      where: { agentId },
+      attributes: ['engagement'], // Assuming an 'engagement' column exists
+    });
+
+    // Calculate average engagement
+    const averageEngagement =
+      engagementData.reduce((sum, preOrder) => sum + (preOrder.engagement || 0), 0) /
+      (engagementData.length || 1);
+
+    // Return metrics
+    res.status(200).json({
+      totalClients,
+      newClients,
+      activeClients,
+      averageEngagement: Math.round(averageEngagement * 100) / 100, // Round to 2 decimal places
+    });
+  } catch (error) {
+    console.error('Error fetching agent metrics:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 
 module.exports = router;
